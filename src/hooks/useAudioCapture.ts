@@ -22,6 +22,12 @@ export function useAudioCapture(): UseAudioCaptureReturn {
     setError(null);
 
     try {
+      if (!navigator.mediaDevices) {
+        throw new Error(
+          "Audio capture requires a secure connection (HTTPS). Please access this site via HTTPS or localhost."
+        );
+      }
+
       let stream: MediaStream;
 
       if (source === "mic") {
