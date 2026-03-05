@@ -25,15 +25,13 @@ export function useTranscription(): UseTranscriptionReturn {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   const startTranscription = useCallback((stream: MediaStream) => {
-    // Connect to our API which proxies to Deepgram
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/api/transcribe`;
+    if (typeof MediaRecorder === "undefined") {
+      console.error("MediaRecorder not available. HTTPS is required.");
+      return;
+    }
 
-    // For development, we'll use a direct approach with MediaRecorder
-    // sending audio chunks to our REST API endpoint
-    const mediaRecorder = new MediaRecorder(stream, {
-      mimeType: getSupportedMimeType(),
-    });
+    const mimeType = getSupportedMimeType();
+    const mediaRecorder = new MediaRecorder(stream, { mimeType });
     mediaRecorderRef.current = mediaRecorder;
 
     // Collect audio data and send periodically
